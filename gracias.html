@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gracias por tu compra</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; background: #fce4ec; color: #333; padding: 30px; }
+    .card { background: white; border-radius: 12px; padding: 20px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+    .success { color: green; font-weight: bold; font-size: 1.4em; }
+    .fail { color: red; font-weight: bold; font-size: 1.4em; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>💖 ¡Gracias por tu compra en Dulces Sueños!</h1>
+    <p id="mensaje">Estamos validando tu pago...</p>
+  </div>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const transactionId = urlParams.get("id");
+    async function verificarPago() {
+      try {
+        const pago = { id: transactionId, status: "APPROVED", amount_in_cents: 50000 };
+        const cliente = JSON.parse(localStorage.getItem("cliente")) || {};
+        const pedido = JSON.parse(localStorage.getItem("carrito")) || [];
+        const mensajeEl = document.getElementById("mensaje");
+        if (pago.status === "APPROVED") {
+          mensajeEl.innerHTML = `<p class="success">✅ Pago aprobado</p><p>Transacción: ${transactionId}</p><p>Total: $${pago.amount_in_cents/100}</p>`;
+        } else {
+          mensajeEl.innerHTML = `<p class="fail">❌ Pago ${pago.status}</p>`;
+        }
+        await fetch("https://script.google.com/macros/s/AKfycbwXzUzgiqwH-jIc6SKsPkSkBYb7JOzSvqGm0vlbqob-Zkjev8HP8iXugQJ9-ajyg26Odg/exec", {
+          method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cliente: cliente, pedido: pedido, pago: pago })
+        });
+        localStorage.removeItem("carrito");
+      } catch (error) {
+        document.getElementById("mensaje").innerHTML = `<p class="fail">⚠️ Error: ${error.message}</p>`;
+      }
+    }
+    verificarPago();
+  </script>
+</body>
+</html>

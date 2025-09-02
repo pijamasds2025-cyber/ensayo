@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dulces Sueños - Tienda Online</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #fce4ec; margin: 0; padding: 0; }
+    header { background: linear-gradient(90deg, #f8bbd0, #bbdefb, #e1bee7); padding: 20px; text-align: center; }
+    header h1 { margin: 0; color: #4a148c; }
+    nav a { margin: 0 10px; text-decoration: none; color: #4a148c; font-weight: bold; }
+    .productos { display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; }
+    .producto { background: #fff; border-radius: 12px; padding: 15px; width: 200px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .producto img { width: 100%; border-radius: 8px; }
+    .producto h3 { margin: 10px 0; font-size: 1.1em; }
+    .carrito-btn { background: #4caf50; color: white; padding: 8px; border: none; border-radius: 6px; cursor: pointer; width: 100%; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>💖 Dulces Sueños</h1>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="checkout.html">Carrito 🛒</a>
+      <a href="https://www.instagram.com/dsuenos_pijamas?igsh=YWd1azl2eTZnd2tq" target="_blank">Instagram</a>
+      <a href="https://www.tiktok.com/@dsuenos_pijamas?_t=ZS-8zMcFr0lxIY&_r=1" target="_blank">TikTok</a>
+      <a href="https://www.facebook.com/share/1H7fWznebq/" target="_blank">Facebook</a>
+    </nav>
+  </header>
+  <main>
+    <section class="productos" id="productos"></section>
+  </main>
+  <script>
+    // Ejemplo de productos simulados
+    const productos = [
+      { nombre: "Pijama Gaticos", precio: 45000, imagen: "https://via.placeholder.com/200x200?text=Gaticos" },
+      { nombre: "Pijama Estrellas", precio: 50000, imagen: "https://via.placeholder.com/200x200?text=Estrellas" }
+    ];
+
+    const contenedor = document.getElementById("productos");
+
+    productos.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "producto";
+      div.innerHTML = `
+        <img src="${p.imagen}" alt="${p.nombre}">
+        <h3>${p.nombre}</h3>
+        <p>$${p.precio}</p>
+        <button class="carrito-btn">Añadir al carrito</button>
+      `;
+      div.querySelector("button").addEventListener("click", () => {
+        let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+        carrito.push(p);
+        localStorage.setItem("carrito", JSON.stringify(carrito));
+        alert("Producto añadido al carrito");
+      });
+      contenedor.appendChild(div);
+    });
+  </script>
+</body>
+</html>

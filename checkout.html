@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout - Dulces Sueños</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f3e5f5; color: #333; padding: 20px; }
+    .container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    h1 { text-align: center; color: #7b1fa2; }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+    input, select { width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; }
+    .carrito { margin: 20px 0; padding: 10px; background: #fce4ec; border-radius: 8px; }
+    .btn-pagar { display: flex; align-items: center; justify-content: center; gap: 8px; background: #4caf50; color: white; font-size: 1.2em; padding: 12px; border: none; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 20px; }
+    .btn-pagar:hover { background: #388e3c; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🛍️ Finalizar Compra</h1>
+    <div class="carrito" id="resumenCarrito">
+      <h3>Tu Carrito:</h3>
+      <ul id="listaCarrito"></ul>
+      <p><strong>Total:</strong> $<span id="totalCarrito">0</span></p>
+    </div>
+    <form id="checkoutForm">
+      <label>Nombre Completo</label>
+      <input type="text" id="nombre" required>
+      <label>Tipo de identificación</label>
+      <select id="tipoId" required>
+        <option value="CC">Cédula de Ciudadanía</option>
+        <option value="TI">Tarjeta de Identidad</option>
+      </select>
+      <label>Número de identificación</label>
+      <input type="text" id="numeroId" required>
+      <label>Número de celular</label>
+      <input type="text" id="celular" required>
+      <label>Correo electrónico</label>
+      <input type="email" id="email" required>
+      <label>Departamento</label>
+      <select id="departamento" required><option value="">Seleccione un departamento</option></select>
+      <label>Municipio</label>
+      <select id="municipio" required><option value="">Seleccione un municipio</option></select>
+      <button type="submit" class="btn-pagar">💵 Ir a pagar</button>
+    </form>
+  </div>
+  <script>
+    const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    const listaCarrito = document.getElementById("listaCarrito");
+    const totalCarrito = document.getElementById("totalCarrito");
+    let total = 0;
+    carrito.forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = `${item.nombre} - $${item.precio}`;
+      listaCarrito.appendChild(li);
+      total += item.precio;
+    });
+    totalCarrito.textContent = total;
+    const departamentoSelect = document.getElementById("departamento");
+    const municipioSelect = document.getElementById("municipio");
+    fetch("colombia.json").then(response => response.json()).then(data => {
+      data.forEach(dep => {
+        const option = document.createElement("option");
+        option.value = dep.departamento;
+        option.textContent = dep.departamento;
+        departamentoSelect.appendChild(option);
+      });
+      departamentoSelect.addEventListener("change", function() {
+        municipioSelect.innerHTML = '<option value="">Seleccione un municipio</option>';
+        const seleccionado = this.value;
+        const departamento = data.find(d => d.departamento === seleccionado);
+        if (departamento) {
+          departamento.ciudades.forEach(ciudad => {
+            const option = document.createElement("option");
+            option.value = ciudad;
+            option.textContent = ciudad;
+            municipioSelect.appendChild(option);
+          });
+        }
+      });
+    });
+    document.getElementById("checkoutForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const cliente = {
+        nombre: document.getElementById("nombre").value,
+        tipoId: document.getElementById("tipoId").value,
+        numeroId: document.getElementById("numeroId").value,
+        celular: document.getElementById("celular").value,
+        email: document.getElementById("email").value,
+        departamento: document.getElementById("departamento").value,
+        municipio: document.getElementById("municipio").value
+      };
+      localStorage.setItem("cliente", JSON.stringify(cliente));
+      window.location.href = "gracias.html?id=TRANSACCION_DE_PRUEBA";
+    });
+  </script>
+</body>
+</html>
