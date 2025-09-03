@@ -1,44 +1,64 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-CO">
 <head>
   <meta charset="UTF-8">
-  <title>Gracias por tu compra</title>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; background: #fce4ec; color: #333; padding: 30px; }
-    .card { background: white; border-radius: 12px; padding: 20px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-    .success { color: green; font-weight: bold; font-size: 1.4em; }
-    .fail { color: red; font-weight: bold; font-size: 1.4em; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gracias por tu compra | Dulces Sueños</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
-  <div class="card">
-    <h1>💖 ¡Gracias por tu compra en Dulces Sueños!</h1>
-    <p id="mensaje">Estamos validando tu pago...</p>
-  </div>
-  <script>
+  <main class="container" style="padding:40px 0">
+    <div class="card" style="text-align:center">
+      <h1>💖 ¡Gracias por tu compra!</h1>
+      <p id="mensaje">Estamos registrando tu pedido…</p>
+      <p id="detalle" class="muted"></p>
+      <p><a href="index.html" class="btn btn-light">Volver al inicio</a></p>
+    </div>
+  </main>
+
+  <script type="module">
+    import { ORDERS_API } from "./config.js";
     const urlParams = new URLSearchParams(window.location.search);
-    const transactionId = urlParams.get("id");
-    async function verificarPago() {
-      try {
-        const pago = { id: transactionId, status: "APPROVED", amount_in_cents: 50000 };
-        const cliente = JSON.parse(localStorage.getItem("cliente")) || {};
-        const pedido = JSON.parse(localStorage.getItem("carrito")) || [];
-        const mensajeEl = document.getElementById("mensaje");
-        if (pago.status === "APPROVED") {
-          mensajeEl.innerHTML = `<p class="success">✅ Pago aprobado</p><p>Transacción: ${transactionId}</p><p>Total: $${pago.amount_in_cents/100}</p>`;
-        } else {
-          mensajeEl.innerHTML = `<p class="fail">❌ Pago ${pago.status}</p>`;
-        }
-        await fetch("https://script.google.com/macros/s/AKfycbwXzUzgiqwH-jIc6SKsPkSkBYb7JOzSvqGm0vlbqob-Zkjev8HP8iXugQJ9-ajyg26Odg/exec", {
-          method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cliente: cliente, pedido: pedido, pago: pago })
-        });
-        localStorage.removeItem("carrito");
-      } catch (error) {
-        document.getElementById("mensaje").innerHTML = `<p class="fail">⚠️ Error: ${error.message}</p>`;
-      }
-    }
-    verificarPago();
+    const referencia = urlParams.get("reference") || "SIN_REFERENCIA";
+    const estadoPago = urlParams.get("status") || "PENDIENTE";
+
+    const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+    const cliente = JSON.parse(localStorage.getItem("cliente")) || {};
+    const orderMeta = JSON.parse(localStorage.getItem("orderMeta") || "{}");
+
+    // Total (ya incluye precio mayorista si aplica y envío estimado)
+    const total = orderMeta?.subtotal ?? carrito.reduce((acc, p) => acc + (p.precio || 0), 0);
+
+    const pedido = {
+      referencia,
+      estadoPago,
+      cliente,
+      carrito,
+      resumen: orderMeta
+    };
+
+    fetch(ORDERS_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(pedido),
+    })
+    .then(async (res) => {
+      const text = await res.text();
+      if (!res.ok) throw new Error(text || "Error al guardar");
+      document.getElementById("mensaje").textContent = "✅ Tu pedido ha sido registrado con éxito. Te contactaremos pronto.";
+      document.getElementById("detalle").textContent = `Referencia: ${referencia} · Estado del pago: ${estadoPago}`;
+      // Limpiar carrito
+      localStorage.removeItem("carrito");
+      localStorage.removeItem("cliente");
+      localStorage.removeItem("orderMeta");
+    })
+    .catch(err => {
+      document.getElementById("mensaje").textContent = "⚠️ Hubo un problema registrando tu pedido. Por favor contáctanos.";
+      console.error("Error enviando pedido:", err);
+    });
   </script>
 </body>
 </html>

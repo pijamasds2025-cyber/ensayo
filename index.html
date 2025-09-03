@@ -1,60 +1,120 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-CO">
 <head>
   <meta charset="UTF-8">
-  <title>Dulces Sueños - Tienda Online</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #fce4ec; margin: 0; padding: 0; }
-    header { background: linear-gradient(90deg, #f8bbd0, #bbdefb, #e1bee7); padding: 20px; text-align: center; }
-    header h1 { margin: 0; color: #4a148c; }
-    nav a { margin: 0 10px; text-decoration: none; color: #4a148c; font-weight: bold; }
-    .productos { display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; }
-    .producto { background: #fff; border-radius: 12px; padding: 15px; width: 200px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    .producto img { width: 100%; border-radius: 8px; }
-    .producto h3 { margin: 10px 0; font-size: 1.1em; }
-    .carrito-btn { background: #4caf50; color: white; padding: 8px; border: none; border-radius: 6px; cursor: pointer; width: 100%; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dulces Sueños | Pijamas para Dama, Niño y Caballero</title>
+  <meta name="description" content="Catálogo de pijamas para Dama, Niño y Caballero. Envíos a todo Colombia. Compra segura y rápida.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
-  <header>
-    <h1>💖 Dulces Sueños</h1>
-    <nav>
-      <a href="index.html">Inicio</a>
-      <a href="checkout.html">Carrito 🛒</a>
-      <a href="https://www.instagram.com/dsuenos_pijamas?igsh=YWd1azl2eTZnd2tq" target="_blank">Instagram</a>
-      <a href="https://www.tiktok.com/@dsuenos_pijamas?_t=ZS-8zMcFr0lxIY&_r=1" target="_blank">TikTok</a>
-      <a href="https://www.facebook.com/share/1H7fWznebq/" target="_blank">Facebook</a>
-    </nav>
+  <header class="site-header">
+    <div class="container header-grid">
+      <a class="brand" href="index.html" aria-label="Inicio Dulces Sueños">
+        <span class="logo-heart">💖</span> Dulces Sueños
+      </a>
+      <form class="search" role="search">
+        <input type="search" id="q" placeholder="Buscar pijama..." aria-label="Buscar">
+      </form>
+      <nav class="top-actions" style="position:relative">
+        <a href="checkout.html" class="cart-link" aria-label="Ir al carrito" id="cartToggle">
+          <svg class="cart-ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 4h-2l-1 2v2h2l3.6 7.6a2 2 0 0 0 1.8 1.2h7.4v-2H12l-.4-1h7a2 2 0 0 0 1.8-1.2l2.6-6H6.4L5.7 4H4"/>
+          </svg>
+          <span id="cart-count" class="badge">0</span>
+        </a>
+
+        <!-- Mini-carrito -->
+        <div id="miniCart" class="mini-cart" aria-live="polite" aria-label="Resumen de carrito">
+          <h4>Tu carrito</h4>
+          <div id="miniCartItems"></div>
+          <div class="total"><span>Subtotal</span><span id="miniCartSubtotal">$0</span></div>
+          <div class="actions">
+            <a class="btn btn-ghost" href="index.html">Seguir comprando</a>
+            <a class="btn btn-primary" href="checkout.html">Finalizar compra</a>
+          </div>
+          <p class="note small" style="margin-top:8px">Después de 6 unidades el precio es al por mayor.</p>
+        </div>
+      </nav>
+    </div>
   </header>
-  <main>
-    <section class="productos" id="productos"></section>
+
+  <main class="container main-grid">
+    <!-- Sidebar filtros -->
+    <aside class="sidebar" aria-label="Filtros y categorías">
+      <details open>
+        <summary>🎯 Categorías</summary>
+        <div class="filter-group">
+          <label><input type="radio" name="cat" value="Todos" checked> Todos</label>
+          <label><input type="radio" name="cat" value="Dama"> Dama</label>
+          <label><input type="radio" name="cat" value="Niño"> Niño</label>
+          <label><input type="radio" name="cat" value="Caballero"> Caballero</label>
+        </div>
+      </details>
+
+      <details open>
+        <summary>📏 Tallas Adulto</summary>
+        <div class="filter-group">
+          <label><input type="checkbox" class="size-adult" value="S"> S</label>
+          <label><input type="checkbox" class="size-adult" value="M"> M</label>
+          <label><input type="checkbox" class="size-adult" value="L"> L</label>
+          <label><input type="checkbox" class="size-adult" value="XL"> XL</label>
+        </div>
+      </details>
+
+      <details>
+        <summary>🧒 Tallas Niño</summary>
+        <div class="filter-group">
+          <label><input type="checkbox" class="size-kid" value="2"> 2</label>
+          <label><input type="checkbox" class="size-kid" value="4"> 4</label>
+          <label><input type="checkbox" class="size-kid" value="6"> 6</label>
+          <label><input type="checkbox" class="size-kid" value="8"> 8</label>
+          <label><input type="checkbox" class="size-kid" value="10"> 10</label>
+          <label><input type="checkbox" class="size-kid" value="12"> 12</label>
+        </div>
+      </details>
+
+      <button id="clearFilters" class="btn btn-light">Limpiar filtros</button>
+      <p class="note" style="margin-top:10px">Después de 6 unidades el precio es al por mayor.</p>
+    </aside>
+
+    <!-- Catálogo -->
+    <section class="productos" id="productos">
+      <header class="list-header">
+        <h1>Catálogo</h1>
+        <p id="loading" class="muted">Cargando productos…</p>
+      </header>
+      <!-- Grid se inyecta por JS -->
+    </section>
   </main>
-  <script>
-    // Ejemplo de productos simulados
-    const productos = [
-      { nombre: "Pijama Gaticos", precio: 45000, imagen: "https://via.placeholder.com/200x200?text=Gaticos" },
-      { nombre: "Pijama Estrellas", precio: 50000, imagen: "https://via.placeholder.com/200x200?text=Estrellas" }
-    ];
 
-    const contenedor = document.getElementById("productos");
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <h4>Síguenos</h4>
+        <div class="socials">
+          <a class="social" href="https://www.facebook.com/share/1H7fWznebq/" target="_blank" rel="noopener" aria-label="Facebook">Facebook</a>
+          <a class="social" href="https://www.tiktok.com/@dsuenos_pijamas?_t=ZS-8zMcFr0lxIY&_r=1" target="_blank" rel="noopener" aria-label="TikTok">TikTok</a>
+          <a class="social" href="https://www.instagram.com/dsuenos_pijamas?igsh=YWd1azl2eTZnd2tq" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+        </div>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <ul class="list-plain">
+          <li>WhatsApp: 300 000 0000</li>
+          <li>Email: hola@dulcessuenos.co</li>
+        </ul>
+      </div>
+    </div>
+    <p class="copy">© <span id="year"></span> Dulces Sueños</p>
+  </footer>
 
-    productos.forEach(p => {
-      const div = document.createElement("div");
-      div.className = "producto";
-      div.innerHTML = `
-        <img src="${p.imagen}" alt="${p.nombre}">
-        <h3>${p.nombre}</h3>
-        <p>$${p.precio}</p>
-        <button class="carrito-btn">Añadir al carrito</button>
-      `;
-      div.querySelector("button").addEventListener("click", () => {
-        let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-        carrito.push(p);
-        localStorage.setItem("carrito", JSON.stringify(carrito));
-        alert("Producto añadido al carrito");
-      });
-      contenedor.appendChild(div);
-    });
-  </script>
+  <div id="snackbar" class="snackbar" role="status" aria-live="polite"></div>
+
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+  <script type="module" src="scripts.js"></script>
 </body>
 </html>

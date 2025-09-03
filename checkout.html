@@ -1,96 +1,192 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-CO">
 <head>
   <meta charset="UTF-8">
-  <title>Checkout - Dulces Sueños</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f3e5f5; color: #333; padding: 20px; }
-    .container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-    h1 { text-align: center; color: #7b1fa2; }
-    label { font-weight: bold; display: block; margin-top: 10px; }
-    input, select { width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; }
-    .carrito { margin: 20px 0; padding: 10px; background: #fce4ec; border-radius: 8px; }
-    .btn-pagar { display: flex; align-items: center; justify-content: center; gap: 8px; background: #4caf50; color: white; font-size: 1.2em; padding: 12px; border: none; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 20px; }
-    .btn-pagar:hover { background: #388e3c; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Finalizar compra | Dulces Sueños</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
-  <div class="container">
-    <h1>🛍️ Finalizar Compra</h1>
-    <div class="carrito" id="resumenCarrito">
-      <h3>Tu Carrito:</h3>
-      <ul id="listaCarrito"></ul>
-      <p><strong>Total:</strong> $<span id="totalCarrito">0</span></p>
+  <header class="site-header">
+    <div class="container header-grid">
+      <a class="brand" href="index.html"><span class="logo-heart">💖</span> Dulces Sueños</a>
+      <a href="checkout.html" class="cart-link">
+        <svg class="cart-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h-2l-1 2v2h2l3.6 7.6a2 2 0 0 0 1.8 1.2h7.4v-2H12l-.4-1h7a2 2 0 0 0 1.8-1.2l2.6-6H6.4L5.7 4H4"/></svg>
+        <span id="cart-count" class="badge">0</span>
+      </a>
     </div>
-    <form id="checkoutForm">
-      <label>Nombre Completo</label>
-      <input type="text" id="nombre" required>
-      <label>Tipo de identificación</label>
-      <select id="tipoId" required>
-        <option value="CC">Cédula de Ciudadanía</option>
-        <option value="TI">Tarjeta de Identidad</option>
-      </select>
-      <label>Número de identificación</label>
-      <input type="text" id="numeroId" required>
-      <label>Número de celular</label>
-      <input type="text" id="celular" required>
-      <label>Correo electrónico</label>
-      <input type="email" id="email" required>
-      <label>Departamento</label>
-      <select id="departamento" required><option value="">Seleccione un departamento</option></select>
-      <label>Municipio</label>
-      <select id="municipio" required><option value="">Seleccione un municipio</option></select>
-      <button type="submit" class="btn-pagar">💵 Ir a pagar</button>
-    </form>
-  </div>
-  <script>
+  </header>
+
+  <main class="container" style="padding:24px 0 40px">
+    <h1>🛒 Finalizar compra</h1>
+    <div class="checkout-grid">
+      <!-- Resumen de pedido atractivo -->
+      <section class="summary card" id="resumen">
+        <h2>Resumen de pedido</h2>
+        <table class="table" id="itemsTable" aria-label="Resumen de productos">
+          <thead><tr><th>Producto</th><th>Talla</th><th>Cant.</th><th>Precio</th><th>Total</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <p class="note" style="margin-top:10px">Después de 6 unidades el precio es al por mayor.</p>
+
+        <div class="ship-box" style="margin-top:12px">
+          <h3>Estimador de envío — Interrapidísimo</h3>
+          <div class="ship-grid">
+            <label>Departamento
+              <input type="text" id="departamento" placeholder="p. ej., Antioquia" required>
+            </label>
+            <label>Municipio
+              <input type="text" id="municipio" placeholder="p. ej., Medellín" required>
+            </label>
+            <label>Valor declarado (COP)
+              <input type="number" id="valorDeclarado" value="0" min="0" step="1000">
+            </label>
+            <label class="ship-inline"><input type="checkbox" id="difAcceso"> ¿Difícil acceso?</label>
+          </div>
+          <p id="shipResult" class="small muted" style="margin-top:8px">Completa los campos para estimar.</p>
+        </div>
+
+        <div style="margin-top:10px">
+          <div class="row"><span>Subtotal</span><span id="subtotal">$0</span></div>
+          <div class="row"><span>Envío estimado</span><span id="envio">$0</span></div>
+          <div class="row total"><span>Total a pagar</span><span id="total">$0</span></div>
+        </div>
+      </section>
+
+      <!-- Formulario -->
+      <form id="checkout-form" class="checkout-form card" novalidate>
+        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <label>Nombre completo <input type="text" id="nombre" required autocomplete="name"></label>
+          <label>Celular <input type="tel" id="celular" required inputmode="tel" autocomplete="tel" pattern="\d{7,10}"></label>
+        </div>
+        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <label>Email <input type="email" id="email" required autocomplete="email"></label>
+          <label>Ciudad <input type="text" id="ciudad" required autocomplete="address-level2"></label>
+        </div>
+        <button type="submit" class="btn btn-primary">Confirmar pedido</button>
+      </form>
+    </div>
+  </main>
+
+  <script type="module">
+    import { REDIRECT_URL } from "./config.js";
+
+    const fmt = new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:0});
     const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-    const listaCarrito = document.getElementById("listaCarrito");
-    const totalCarrito = document.getElementById("totalCarrito");
-    let total = 0;
-    carrito.forEach(item => {
-      const li = document.createElement("li");
-      li.textContent = `${item.nombre} - $${item.precio}`;
-      listaCarrito.appendChild(li);
-      total += item.precio;
+
+    // Cart count
+    const cartCount = document.getElementById("cart-count");
+    if (cartCount) cartCount.textContent = carrito.reduce((a,b)=>a + (Number(b.cantidad)||1),0);
+
+    // Wholesale logic
+    const totalUnidades = carrito.reduce((a,b)=>a + (Number(b.cantidad)||1),0);
+    const aplicaMayorista = totalUnidades > 6;
+
+    // Render items
+    const tbody = document.querySelector("#itemsTable tbody");
+    let subtotal = 0;
+    carrito.forEach(p => {
+      const precioUnit = aplicaMayorista ? (p.precioMayorista ?? Math.round(p.precio*0.85)) : p.precio;
+      const totalLinea = precioUnit * (p.cantidad || 1);
+      subtotal += totalLinea;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${p.nombre}</td><td>${p.talla||"-"}</td><td>${p.cantidad||1}</td>
+                      <td>${fmt.format(precioUnit)}${aplicaMayorista ? " <span class='small muted'>(mayorista)</span>": ""}</td>
+                      <td>${fmt.format(totalLinea)}</td>`;
+      tbody.appendChild(tr);
     });
-    totalCarrito.textContent = total;
-    const departamentoSelect = document.getElementById("departamento");
-    const municipioSelect = document.getElementById("municipio");
-    fetch("colombia.json").then(response => response.json()).then(data => {
-      data.forEach(dep => {
-        const option = document.createElement("option");
-        option.value = dep.departamento;
-        option.textContent = dep.departamento;
-        departamentoSelect.appendChild(option);
-      });
-      departamentoSelect.addEventListener("change", function() {
-        municipioSelect.innerHTML = '<option value="">Seleccione un municipio</option>';
-        const seleccionado = this.value;
-        const departamento = data.find(d => d.departamento === seleccionado);
-        if (departamento) {
-          departamento.ciudades.forEach(ciudad => {
-            const option = document.createElement("option");
-            option.value = ciudad;
-            option.textContent = ciudad;
-            municipioSelect.appendChild(option);
-          });
-        }
-      });
+
+    document.getElementById("subtotal").textContent = fmt.format(subtotal);
+
+    // Shipping estimator (Interrapidísimo aprox.)
+    const depSel = document.getElementById("departamento");
+    const muniInput = document.getElementById("municipio");
+    const result = document.getElementById("shipResult");
+    const vdInput = document.getElementById("valorDeclarado");
+    const daInput = document.getElementById("difAcceso");
+    const envioOut = document.getElementById("envio");
+    const totalOut = document.getElementById("total");
+
+    function estimateShipping(){
+      const unidades = carrito.reduce((a,b)=>a+Number(b.cantidad||1),0);
+      const dep = depSel.value.trim();
+      const muni = muniInput.value.trim();
+      if (!dep || !muni || unidades===0){
+        result.textContent = "Completa departamento, municipio y carrito para estimar.";
+        envioOut.textContent = fmt.format(0);
+        totalOut.textContent = fmt.format(subtotal);
+        return 0;
+      }
+      const VD = Number(vdInput.value||0);
+      const dif = daInput.checked;
+      const UNIT_W = 0.5; // kg por prenda
+      const dims = {L:30,W:25,H:5};
+      const VDIV = 6000;
+      const pesoFisico = unidades * UNIT_W;
+      const pesoVol = (dims.L*dims.W*dims.H*unidades)/VDIV;
+      const peso = Math.max(pesoFisico, pesoVol);
+      const ORIGIN_DEP = "Antioquia";
+      let trayecto = (dep.toLowerCase() === ORIGIN_DEP.toLowerCase()) ? (muni.toLowerCase().includes("medell")? "LOCAL" : "REGIONAL") : "NACIONAL";
+      if (dif) trayecto = "DIFICIL";
+      const T = { LOCAL:{base:7900, add:3400}, REGIONAL:{base:10100, add:4000}, NACIONAL:{base:17100, add:4400}, DIFICIL:{base:28100, add:12000} };
+      const base = T[trayecto].base;
+      const add = T[trayecto].add;
+      const kilosAdic = Math.max(0, Math.ceil(peso) - 1);
+      let totalEnvio = base + (kilosAdic*add);
+      if (VD>0) totalEnvio += VD*0.02; // 2% sobreflete
+      result.textContent = `Trayecto: ${trayecto} · Peso liquidable: ${peso.toFixed(2)} kg · Estimado: ${fmt.format(totalEnvio)}`;
+      envioOut.textContent = fmt.format(totalEnvio);
+      totalOut.textContent = fmt.format(subtotal + totalEnvio);
+      return totalEnvio;
+    }
+
+    ["change","input"].forEach(evt => {
+      depSel.addEventListener(evt, estimateShipping);
+      muniInput.addEventListener(evt, estimateShipping);
+      vdInput.addEventListener(evt, estimateShipping);
+      daInput.addEventListener(evt, estimateShipping);
     });
-    document.getElementById("checkoutForm").addEventListener("submit", e => {
+    // init
+    estimateShipping();
+
+    // Submit -> save cliente + shipping + totals then redirect
+    document.getElementById("checkout-form").addEventListener("submit", e => {
       e.preventDefault();
       const cliente = {
-        nombre: document.getElementById("nombre").value,
-        tipoId: document.getElementById("tipoId").value,
-        numeroId: document.getElementById("numeroId").value,
-        celular: document.getElementById("celular").value,
-        email: document.getElementById("email").value,
-        departamento: document.getElementById("departamento").value,
-        municipio: document.getElementById("municipio").value
+        nombre: document.getElementById("nombre").value.trim(),
+        celular: document.getElementById("celular").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        ciudad: document.getElementById("ciudad").value.trim(),
       };
+      if (!cliente.nombre || !cliente.email) { alert("Completa tus datos."); return; }
+
+      const envio = {
+        departamento: depSel.value.trim(),
+        municipio: muniInput.value.trim(),
+        valorDeclarado: Number(vdInput.value||0),
+        dificilAcceso: daInput.checked,
+        costoEstimado: (()=>{
+          const txt = envioOut.textContent.replace(/[^\d]/g,"");
+          return Number(txt||0);
+        })()
+      };
+
+      const orderMeta = {
+        subtotal,
+        totalUnidades,
+        aplicaMayorista,
+        envio,
+        totalConEnvio: subtotal + envio.costoEstimado
+      };
+
       localStorage.setItem("cliente", JSON.stringify(cliente));
-      window.location.href = "gracias.html?id=TRANSACCION_DE_PRUEBA";
+      localStorage.setItem("orderMeta", JSON.stringify(orderMeta));
+
+      // Simulamos un flujo de pago exitoso y redirigimos a /gracias
+      window.location.href = `${REDIRECT_URL}?status=APPROVED&reference=TEST${Date.now()}`;
     });
   </script>
 </body>
